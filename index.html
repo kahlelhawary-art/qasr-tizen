@@ -339,6 +339,56 @@
     color: var(--gold-bright);
   }
 
+  /* ============ AUTO-LOAD PROGRESS ============ */
+  .auto-progress {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .auto-progress-bar {
+    height: 8px;
+    background: rgba(212, 175, 55, 0.1);
+    border-radius: 100px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  .auto-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-deep), var(--gold), var(--gold-bright));
+    border-radius: 100px;
+    width: 0%;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 16px var(--gold-glow);
+    position: relative;
+  }
+  .auto-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+  .auto-progress-text {
+    color: var(--gold-bright);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+    min-height: 1.4em;
+  }
+  .auto-progress-count {
+    color: var(--ink-muted);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+  }
+
   /* ============ TOP BAR ============ */
   .top-bar {
     position: fixed;
@@ -835,14 +885,46 @@
 
 <!-- ============ SETUP / WELCOME ============ -->
 <div class="setup" id="setupView">
-  <!-- Welcome screen -->
-  <div class="setup-card" id="welcomeCard">
+  <!-- Auto-loading screen (default first run) -->
+  <div class="setup-card" id="autoLoadCard">
     <div class="setup-mark">Q</div>
     <h1>قَصْـر</h1>
     <div class="latin">QASR · TV</div>
     <h2>أهلاً بك</h2>
-    <p>تطبيقك الشخصي لمشاهدة قنوات التلفزيون.<br>أضف قائمة قنواتك لتبدأ.</p>
+    <p>جاري تحميل أكثر من <strong style="color:var(--gold-bright)">300 قناة عربية</strong><br>إخبار · أفلام · مسلسلات · أطفال · أغاني · دينية</p>
+
+    <div class="auto-progress">
+      <div class="auto-progress-bar">
+        <div class="auto-progress-fill" id="autoProgressFill"></div>
+      </div>
+      <div class="auto-progress-text" id="autoProgressText">جاري الاتصال...</div>
+      <div class="auto-progress-count" id="autoProgressCount">0 / 6</div>
+    </div>
+
+    <div style="margin-top: 1.5rem;">
+      <button class="btn btn-ghost" id="skipAutoLoad" style="width:auto; padding: 0.6rem 1.2rem; font-size:0.9rem">تخطّي وإضافة قائمة يدوية</button>
+    </div>
+  </div>
+
+  <!-- Manual options screen -->
+  <div class="setup-card" id="welcomeCard" style="display:none">
+    <div class="setup-mark">Q</div>
+    <h1>قَصْـر</h1>
+    <div class="latin">QASR · TV</div>
+    <h2>إضافة قائمة قنوات</h2>
+    <p>أضف قائمة قنوات خاصة من مزوّدك<br>(للاستخدام مع اشتراك خاص)</p>
     <div class="setup-options">
+      <div class="setup-option" data-action="autoretry">
+        <div class="setup-option-icon" style="background: linear-gradient(135deg, var(--emerald), #1A8B65);">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        </div>
+        <div class="setup-option-text">
+          <div class="setup-option-title">تحميل القنوات العربية تلقائياً</div>
+          <div class="setup-option-sub">300+ قناة مجانية — موصى به</div>
+        </div>
+        <svg class="setup-option-arrow" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M15 18l-6-6 6-6"/></svg>
+      </div>
+
       <div class="setup-option" data-action="url">
         <div class="setup-option-icon">
           <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg>
@@ -872,17 +954,6 @@
         <div class="setup-option-text">
           <div class="setup-option-title">لصق نص M3U</div>
           <div class="setup-option-sub">الصق محتوى القائمة مباشرة</div>
-        </div>
-        <svg class="setup-option-arrow" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M15 18l-6-6 6-6"/></svg>
-      </div>
-
-      <div class="setup-option" data-action="demo">
-        <div class="setup-option-icon" style="background: linear-gradient(135deg, var(--emerald), #1A8B65);">
-          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        </div>
-        <div class="setup-option-text">
-          <div class="setup-option-title">قنوات YouTube الرسمية المجانية</div>
-          <div class="setup-option-sub">24 قناة عربية رسمية — قانونية ومجانية</div>
         </div>
         <svg class="setup-option-arrow" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M15 18l-6-6 6-6"/></svg>
       </div>
@@ -998,9 +1069,10 @@
     <div class="label">SETTINGS</div>
     <h2>إدارة قوائم القنوات</h2>
     <div class="playlist-list" id="playlistList"></div>
-    <div class="btn-row">
-      <button class="btn btn-ghost" id="btnCloseSettings">إغلاق</button>
+    <div class="btn-row" style="flex-direction: column; gap: 0.5rem;">
+      <button class="btn btn-primary" id="btnRefreshAuto">🔄 تحديث القنوات العربية</button>
       <button class="btn btn-primary" id="btnAddPlaylist">+ إضافة قائمة جديدة</button>
+      <button class="btn btn-ghost" id="btnCloseSettings">إغلاق</button>
     </div>
   </div>
 </div>
@@ -1025,26 +1097,6 @@
 
 <script>
 'use strict';
-
-/* ============================================================
-   SAMSUNG TIZEN TV REMOTE KEY REGISTRATION
-   Register keys we want to capture from the TV remote
-   ============================================================ */
-try {
-  if (window.tizen && tizen.tvinputdevice) {
-    const keysToRegister = [
-      'MediaPlayPause', 'MediaPlay', 'MediaPause', 'MediaStop',
-      'MediaRewind', 'MediaFastForward',
-      'ColorF0Red', 'ColorF1Green', 'ColorF2Yellow', 'ColorF3Blue',
-      'ChannelUp', 'ChannelDown', 'ChannelList',
-      'Info', 'Source', 'Tools', 'Menu', 'Exit', 'Guide',
-      '0','1','2','3','4','5','6','7','8','9'
-    ];
-    keysToRegister.forEach(k => {
-      try { tizen.tvinputdevice.registerKey(k); } catch(e){}
-    });
-  }
-} catch(e) { console.log('Not on Tizen TV'); }
 
 /* ============================================================
    M3U PARSER
@@ -1092,36 +1144,112 @@ function parseM3U(content) {
 }
 
 /* ============================================================
-   BUILT-IN YOUTUBE CHANNELS (legal free option)
+   AUTO-LOAD: Arabic channels from iptv-org (multiple sources)
+   ============================================================ */
+const ARABIC_CATEGORY_MAP = {
+  'News': 'الإخبارية',
+  'Entertainment': 'الترفيهية',
+  'Movies': 'الأفلام',
+  'Series': 'المسلسلات',
+  'Music': 'الأغاني',
+  'Kids': 'الأطفال',
+  'Religious': 'الدينية',
+  'Sports': 'الرياضية',
+  'Culture': 'الثقافية',
+  'Documentary': 'الوثائقية',
+  'Cooking': 'الطبخ',
+  'Education': 'التعليمية',
+  'Lifestyle': 'منوعات',
+  'Auto': 'عام',
+  'Business': 'الأعمال',
+  'Comedy': 'الكوميدية',
+  'Family': 'العائلية',
+  'Travel': 'السياحة',
+  'Weather': 'الطقس',
+  'General': 'عام',
+  'Outdoor': 'منوعات',
+  'Legislative': 'سياسية',
+  'Classic': 'الكلاسيكية',
+  'Relax': 'منوعات',
+  'Animation': 'الأطفال',
+  'Shop': 'تسوّق',
+  'Undefined': 'عام',
+  '': 'عام'
+};
+
+function normalizeCategory(group) {
+  if (!group) return 'عام';
+  // iptv-org often uses "Auto;Entertainment" - take first meaningful one
+  const parts = group.split(';').map(s => s.trim());
+  for (const part of parts) {
+    if (ARABIC_CATEGORY_MAP[part]) return ARABIC_CATEGORY_MAP[part];
+  }
+  // Try first part as is, capitalize
+  const first = parts[0];
+  if (ARABIC_CATEGORY_MAP[first]) return ARABIC_CATEGORY_MAP[first];
+  return first || 'عام';
+}
+
+const AUTO_SOURCES = [
+  { url: 'https://iptv-org.github.io/iptv/languages/ara.m3u',     label: 'القنوات العربية الشاملة' },
+  { url: 'https://iptv-org.github.io/iptv/countries/eg.m3u',      label: 'قنوات مصر (مسلسلات وترفيه)' },
+  { url: 'https://iptv-org.github.io/iptv/countries/sy.m3u',      label: 'قنوات سوريا (الدراما)' },
+  { url: 'https://iptv-org.github.io/iptv/countries/lb.m3u',      label: 'قنوات لبنان' },
+  { url: 'https://iptv-org.github.io/iptv/countries/sa.m3u',      label: 'قنوات السعودية' },
+  { url: 'https://iptv-org.github.io/iptv/countries/iq.m3u',      label: 'قنوات العراق' }
+];
+
+async function autoLoadAllChannels(onProgress) {
+  const allChannels = [];
+  const seen = new Set();
+  let total = AUTO_SOURCES.length;
+  let done = 0;
+
+  for (const src of AUTO_SOURCES) {
+    if (onProgress) onProgress(done, total, src.label);
+    try {
+      const res = await fetch(src.url);
+      if (!res.ok) continue;
+      const text = await res.text();
+      const channels = parseM3U(text);
+      for (const ch of channels) {
+        // Deduplicate by URL
+        if (seen.has(ch.url)) continue;
+        seen.add(ch.url);
+        // Normalize category to Arabic
+        ch.group = normalizeCategory(ch.group);
+        ch.id = 'auto_' + allChannels.length;
+        allChannels.push(ch);
+      }
+    } catch (e) {
+      console.warn('Failed to load', src.url, e);
+    }
+    done++;
+    if (onProgress) onProgress(done, total, src.label);
+  }
+
+  return allChannels;
+}
+
+/* ============================================================
+   YOUTUBE BONUS CHANNELS (official Arabic news)
    ============================================================ */
 function getYouTubeChannels() {
   const yt = [
-    { name:'الجزيرة',       group:'إخبارية', yt:'UCfiwzLy-8yKzIbsmZTzxDgw' },
-    { name:'العربية',        group:'إخبارية', yt:'UCRSnPpFM7Q8x7BwgQZUFhkA' },
-    { name:'سكاي نيوز عربية',group:'إخبارية', yt:'UCC-eGM-KKUz3Z7kUFakBTSw' },
-    { name:'الحدث',          group:'إخبارية', yt:'UCIShpXcj7wm-X3Q8E5fBlhg' },
-    { name:'الميادين',      group:'إخبارية', yt:'UCJXm3EunBgDKQ9Dnvpdq2KQ' },
-    { name:'فرانس 24',      group:'إخبارية', yt:'UCQM6E5KyA_E_M3TRXARHzkA' },
-    { name:'DW عربية',       group:'إخبارية', yt:'UCEhnXejt43F0tVZvAkfmGEg' },
-    { name:'TRT عربي',      group:'إخبارية', yt:'UCwn3jrMm_ddAZdGv_StMEJg' },
-    { name:'RT عربية',       group:'إخبارية', yt:'UC1m21PT4ZgNCK5y9cqOAkPw' },
-    { name:'BBC عربي',       group:'إخبارية', yt:'UCgnQ5UqvrG_CLyqhz2v7B-Q' },
-    { name:'مكة المكرّمة',  group:'دينية',   yt:'UCxK0VPb89ZSWlRsglLrgrwg' },
-    { name:'المدينة المنوّرة',group:'دينية', yt:'UCgK1J2eb0HP02EyDxIQNd8w' },
-    { name:'اقرأ',           group:'دينية',   yt:'UCDWfg_YBfM8bS2jOqdWk3qw' },
-    { name:'روتانا سينما',   group:'ترفيهية', yt:'UC0jK2NWBpJBE7n-3hNvPQAQ' },
-    { name:'روتانا كلاسيك', group:'ترفيهية', yt:'UCk7c-gM_PvwruCm5q8jHc8w' },
-    { name:'دراما عربية',    group:'ترفيهية', yt:'UCQEVQHEhJrCzU-EPMJTFEdg' },
-    { name:'روتانا موسيقى', group:'موسيقى',  yt:'UC2_Tczc1lz-vOG1UE1q4PHA' },
-    { name:'مزيكا',          group:'موسيقى',  yt:'UCQyLkiUM_b7c1IcrJBV-LWQ' },
-    { name:'سبيستون',        group:'أطفال',   yt:'UCNTZQTQQiE6e0V97QKhTu5Q' },
-    { name:'جيم',            group:'أطفال',   yt:'UCxPzdFGskCdxZc8xSrBpD-A' },
-    { name:'العربي',         group:'ثقافية',  yt:'UC8lhLyrLvLaA6IxKWQXh-_g' },
-    { name:'ناشيونال جيوغرافيك',group:'ثقافية',yt:'UCpVm7bg6pXKo1Pr6k5kxG9A' }
+    { name:'الجزيرة',       group:'الإخبارية', yt:'UCfiwzLy-8yKzIbsmZTzxDgw' },
+    { name:'العربية',        group:'الإخبارية', yt:'UCRSnPpFM7Q8x7BwgQZUFhkA' },
+    { name:'سكاي نيوز عربية',group:'الإخبارية', yt:'UCC-eGM-KKUz3Z7kUFakBTSw' },
+    { name:'الحدث',          group:'الإخبارية', yt:'UCIShpXcj7wm-X3Q8E5fBlhg' },
+    { name:'الميادين',      group:'الإخبارية', yt:'UCJXm3EunBgDKQ9Dnvpdq2KQ' },
+    { name:'فرانس 24',      group:'الإخبارية', yt:'UCQM6E5KyA_E_M3TRXARHzkA' },
+    { name:'DW عربية',       group:'الإخبارية', yt:'UCEhnXejt43F0tVZvAkfmGEg' },
+    { name:'TRT عربي',      group:'الإخبارية', yt:'UCwn3jrMm_ddAZdGv_StMEJg' },
+    { name:'مكة المكرّمة',  group:'الدينية',   yt:'UCxK0VPb89ZSWlRsglLrgrwg' },
+    { name:'المدينة المنوّرة',group:'الدينية', yt:'UCgK1J2eb0HP02EyDxIQNd8w' }
   ];
   return yt.map((c, i) => ({
     id: `yt_${i}`,
-    name: c.name,
+    name: c.name + ' (YouTube)',
     group: c.group,
     logo: '',
     url: `https://www.youtube.com/embed/live_stream?channel=${c.yt}&autoplay=1`,
@@ -1187,6 +1315,7 @@ function applyFilter() {
    ============================================================ */
 const setupView = document.getElementById('setupView');
 const cards = {
+  autoload: document.getElementById('autoLoadCard'),
   welcome: document.getElementById('welcomeCard'),
   url: document.getElementById('urlCard'),
   file: document.getElementById('fileCard'),
@@ -1203,24 +1332,71 @@ function hideSetup() {
   document.getElementById('topBar').classList.remove('hidden');
   document.getElementById('helpBar').classList.remove('hidden');
 }
-function showSetup() {
+function showSetup(card = 'welcome') {
   setupView.classList.remove('hidden');
-  showCard('welcome');
+  showCard(card);
   document.getElementById('topBar').classList.add('hidden');
   document.getElementById('helpBar').classList.add('hidden');
 }
+
+/* ============================================================
+   AUTO-LOAD HANDLER
+   ============================================================ */
+async function startAutoLoad() {
+  showCard('autoload');
+  setupView.classList.remove('hidden');
+  document.getElementById('topBar').classList.add('hidden');
+  document.getElementById('helpBar').classList.add('hidden');
+
+  const fillEl = document.getElementById('autoProgressFill');
+  const textEl = document.getElementById('autoProgressText');
+  const countEl = document.getElementById('autoProgressCount');
+
+  try {
+    const channels = await autoLoadAllChannels((done, total, label) => {
+      const pct = (done / total) * 100;
+      fillEl.style.width = pct + '%';
+      textEl.textContent = label;
+      countEl.textContent = `${done} / ${total}`;
+    });
+
+    if (channels.length === 0) {
+      throw new Error('لم يتم العثور على قنوات');
+    }
+
+    // Add YouTube bonus channels
+    const ytChannels = getYouTubeChannels();
+    const allChannels = [...channels, ...ytChannels];
+
+    addPlaylist({
+      id: 'pl_auto_arabic',
+      name: 'القنوات العربية',
+      channels: allChannels,
+      auto: true
+    });
+
+    fillEl.style.width = '100%';
+    textEl.textContent = `✓ تم تحميل ${allChannels.length} قناة`;
+    countEl.textContent = 'اكتمل';
+
+    setTimeout(finishSetup, 1000);
+  } catch (e) {
+    textEl.textContent = '⚠ فشل التحميل التلقائي — جرّب إضافة قائمة يدوية';
+    textEl.style.color = '#FF8B91';
+    setTimeout(() => showCard('welcome'), 1500);
+  }
+}
+
+document.getElementById('skipAutoLoad').addEventListener('click', () => {
+  showCard('welcome');
+});
 
 // Welcome option clicks
 document.querySelectorAll('.setup-option').forEach(opt => {
   opt.addEventListener('click', () => {
     const action = opt.dataset.action;
-    if (action === 'demo') {
-      addPlaylist({
-        id: 'pl_yt_default',
-        name: 'قنوات YouTube الرسمية',
-        channels: getYouTubeChannels()
-      });
-      finishSetup();
+    if (action === 'autoretry') {
+      startAutoLoad();
     } else {
       showCard(action);
     }
@@ -1565,7 +1741,15 @@ function renderPlaylists() {
 
 document.getElementById('btnAddPlaylist').addEventListener('click', () => {
   closeSettings();
-  showSetup();
+  showSetup('welcome');
+});
+document.getElementById('btnRefreshAuto').addEventListener('click', () => {
+  closeSettings();
+  // Remove existing auto playlist
+  state.playlists = state.playlists.filter(p => !p.auto);
+  state.channels = state.playlists.flatMap(p => p.channels);
+  savePlaylists();
+  startAutoLoad();
 });
 document.getElementById('btnCloseSettings').addEventListener('click', closeSettings);
 
@@ -1606,43 +1790,6 @@ function resetActivityTimer() {
    KEYBOARD / REMOTE CONTROL
    ============================================================ */
 document.addEventListener('keydown', e => {
-  // Samsung TV remote special keycodes
-  // 427=ChannelUp, 428=ChannelDown, 10009=Return/Back, 10182=Exit
-  // 457=Info, 458=Guide, 10252=PlayPause
-  switch (e.keyCode) {
-    case 10009: // Return / Back button on Samsung remote
-      e.preventDefault();
-      if (state.settingsOpen) closeSettings();
-      else if (state.guideOpen) closeGuide();
-      else if (window.tizen && tizen.application) {
-        try { tizen.application.getCurrentApplication().exit(); } catch(_){}
-      }
-      return;
-    case 10182: // Exit
-      if (window.tizen && tizen.application) {
-        try { tizen.application.getCurrentApplication().exit(); } catch(_){}
-      }
-      return;
-    case 427: // Channel Up
-      e.preventDefault();
-      if (state.current) changeChannel(-1);
-      return;
-    case 428: // Channel Down
-      e.preventDefault();
-      if (state.current) changeChannel(1);
-      return;
-    case 457: // Info
-    case 458: // Guide
-      e.preventDefault();
-      toggleGuide();
-      return;
-    case 10252: // Play/Pause
-      e.preventDefault();
-      const v = document.getElementById('player');
-      if (v) v.paused ? v.play() : v.pause();
-      return;
-  }
-
   // Don't intercept while typing in inputs
   const tag = document.activeElement.tagName;
   if (tag === 'INPUT' || tag === 'TEXTAREA') {
@@ -1750,7 +1897,8 @@ setInterval(updateClock, 30000);
    ============================================================ */
 loadPlaylists();
 if (state.channels.length === 0) {
-  showSetup();
+  // First run — auto-load Arabic channels from iptv-org
+  startAutoLoad();
 } else {
   hideSetup();
   applyFilter();
